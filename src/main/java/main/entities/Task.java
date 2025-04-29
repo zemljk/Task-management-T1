@@ -11,7 +11,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
 @Entity
 public class Task {
     @Id
