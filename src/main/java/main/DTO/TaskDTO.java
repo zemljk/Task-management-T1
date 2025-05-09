@@ -1,17 +1,12 @@
-package main.entities;
+package main.DTO;
 
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-@Table(name="TASKS")
-public class Task {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class TaskDTO {
     private long id;
     private String title;
     private String description;

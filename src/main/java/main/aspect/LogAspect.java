@@ -23,9 +23,9 @@ public class LogAspect {
     @Around("annotation(trackExecutionTime)")
     public Object trackTime(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
         String methodName = proceedingJoinPoint.getSignature().getName();
         logger.info("@TrackExecutionTime - начало выполнения метода: {}", methodName);
+        stopWatch.start();
         Object result = proceedingJoinPoint.proceed();
         stopWatch.stop();
         logger.info("@TrackExecutionTime - конец выполнения метода: {}, время: {}", methodName, stopWatch.getTotalTimeMillis());

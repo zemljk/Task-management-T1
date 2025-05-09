@@ -1,10 +1,11 @@
 package main.controllers;
 
-import lombok.Getter;
-import main.entities.Task;
+
+
+import main.DTO.TaskDTO;
+import main.DTO.TaskMapper;
 import main.services.TaskService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,41 +16,38 @@ import java.util.Optional;
 public class TaskController {
 
     private final TaskService taskService;
+    private final TaskMapper taskMapper;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, TaskMapper taskMapper) {
         this.taskService = taskService;
+        this.taskMapper = taskMapper;
     }
 
     @PostMapping()
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        Task createdTask = taskService.createTask(task);
-        return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public TaskDTO createTask(@RequestBody TaskDTO taskDTO) {
+        return taskService.createTask(taskDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable("id") Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTask(@PathVariable("id") Long id) {
         taskService.deleteTask(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable("id") Long id) {
-       Optional<Task> taskOptional = taskService.findByIDTask(id);
-       return taskOptional.map(task -> new ResponseEntity<>(task,HttpStatus.OK))
-               .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+    public Optional<TaskDTO> getTaskById(@PathVariable("id") Long id) {
+       return taskService.findByIDTask(id);
     }
 
     @GetMapping()
-    public ResponseEntity<List<Task>> getTasks() {
-        List<Task> tasks = taskService.findAllTasks();
-        return new ResponseEntity<>(tasks,HttpStatus.OK);
+    public List<TaskDTO> getTasks() {
+        return taskService.findAllTasks();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Optional<Task>> updateTask(@PathVariable("id") Long id, @RequestBody Task updatedTask){
-        Optional<Task> taskOptional = taskService.updateByIdTask(id,updatedTask);
-        return taskOptional.map(task -> new ResponseEntity<>(taskOptional,HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NO_CONTENT));
+    public Optional<TaskDTO> updateTask(@PathVariable("id") Long id, @RequestBody TaskDTO updatedTaskDTO){
+        return taskService.updateTask(id,updatedTaskDTO);
     }
 
 }
