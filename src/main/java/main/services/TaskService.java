@@ -12,6 +12,7 @@ import main.aspect.annotation.LogReturnValue;
 import main.aspect.annotation.Loggable;
 import main.aspect.annotation.TrackExecutionTime;
 import main.entities.Task;
+import main.kafka.TaskStatusProducer;
 import main.repositories.TaskRepository;
 import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -28,11 +29,13 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final NotificationService notificationService;
+    private final TaskStatusProducer taskStatusProducer;
 
-    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper, NotificationService notificationService) {
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper, NotificationService notificationService, TaskStatusProducer taskStatusProducer) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
         this.notificationService = notificationService;
+        this.taskStatusProducer = taskStatusProducer;
     }
 
     @Loggable("создание задачи")
@@ -77,7 +80,7 @@ public class TaskService {
                     Task savedTask = taskRepository.save(existingTask);
                     TaskDTO sevedTaskDTO = taskMapper.toDTO(savedTask);
                     String newStatus = sevedTaskDTO.getStatus();
-                    notificationService.sendNotificationEmail(sevedTaskDTO.getId(),newStatus);
+                    taskStatusProducer.sendTaskStatusUpdate(sevedTaskDTO.getId(), newStatus);
                     return sevedTaskDTO;
                 });
     }
