@@ -1,4 +1,4 @@
-package main.DTO;
+package main.dto;
 
 import main.entities.Task;
 import org.mapstruct.Mapper;

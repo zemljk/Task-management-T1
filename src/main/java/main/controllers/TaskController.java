@@ -2,14 +2,13 @@ package main.controllers;
 
 
 
-import main.DTO.TaskDTO;
-import main.DTO.TaskMapper;
+import main.dto.TaskDTO;
+import main.dto.TaskMapper;
 import main.services.TaskService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/tasks")
@@ -36,7 +35,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public Optional<TaskDTO> getTaskById(@PathVariable("id") Long id) {
+    public TaskDTO getTaskById(@PathVariable("id") Long id) {
        return taskService.findByIDTask(id);
     }
 
@@ -46,7 +45,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public Optional<TaskDTO> updateTask(@PathVariable("id") Long id, @RequestBody TaskDTO updatedTaskDTO){
+    public TaskDTO updateTask(@PathVariable("id") Long id, @RequestBody TaskDTO updatedTaskDTO){
         return taskService.updateTask(id,updatedTaskDTO);
     }
 

@@ -2,7 +2,7 @@ package main.config;
 
 
 
-import main.DTO.TaskStatusUpdate;
+import main.dto.TaskStatusUpdate;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.springframework.beans.factory.annotation.Value;

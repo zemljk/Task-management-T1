@@ -3,7 +3,7 @@ package main.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import main.DTO.TaskStatusUpdate;
+import main.dto.TaskStatusUpdate;
 import main.services.NotificationService;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

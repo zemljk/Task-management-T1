@@ -14,6 +14,9 @@ public class NotificationService {
     @Value("${spring.mail.username}")
     private String from;
 
+    @Value("${notification.email.to}")
+    private String recipientEmail;
+
     public NotificationService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
@@ -22,7 +25,7 @@ public class NotificationService {
 
     public void sendNotificationEmail(Long taskId, String newStatus) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo("nek7762@gmail.com");
+        message.setTo(recipientEmail);
         message.setSubject("Статус задачи обновлен");
         message.setText(String.format("Статус задачи с ID %d был обновлен на: %s", taskId, newStatus));
         message.setFrom(from);

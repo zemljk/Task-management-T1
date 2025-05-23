@@ -16,7 +16,9 @@ public class Task {
     private String title;
     private String description;
     private int userId;
-    private String status;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
 
 }
 

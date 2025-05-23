@@ -1,4 +1,4 @@
-package main.DTO;
+package main.dto;
 
 
 import lombok.Getter;
@@ -12,5 +12,4 @@ public class TaskDTO {
     private String description;
     private int userId;
     private String status;
-
 }

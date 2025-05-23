@@ -1,26 +1,21 @@
 package main.services;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import main.DTO.TaskDTO;
-import main.DTO.TaskMapper;
+import main.dto.TaskDTO;
+import main.dto.TaskMapper;
 import main.aspect.annotation.HandleExceptions;
 import main.aspect.annotation.LogReturnValue;
 import main.aspect.annotation.Loggable;
 import main.aspect.annotation.TrackExecutionTime;
 import main.entities.Task;
+import main.entities.TaskStatus;
 import main.kafka.TaskStatusProducer;
 import main.repositories.TaskRepository;
-import org.apache.kafka.common.protocol.types.Field;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.mail.MailSender;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,8 +49,13 @@ public class TaskService {
 
     @HandleExceptions
     @LogReturnValue
-    public Optional<TaskDTO> findByIDTask(Long id) {
-        return taskRepository.findById(id).map(taskMapper::toDTO);
+    public TaskDTO findByIDTask(Long id) {
+        return taskRepository
+                .findById(id)
+                .map(taskMapper::toDTO)
+                .orElseThrow(() -> {
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND);
+                });
     }
 
     @Loggable("нахождение всех задач")
@@ -72,16 +72,20 @@ public class TaskService {
     @Loggable("обновление задачи")
     @TrackExecutionTime
     @HandleExceptions
-    public Optional<TaskDTO> updateTask(Long id, TaskDTO updatedTaskDTO) {
+    public TaskDTO updateTask(Long id, TaskDTO updatedTaskDTO) {
         return taskRepository.findById(id)
                 .map(existingTask -> {
-                    String oldStatus = existingTask.getStatus();
+                    TaskStatus oldStatus = existingTask.getStatus();
                     taskMapper.updateEntityFromDTO(updatedTaskDTO, existingTask);
                     Task savedTask = taskRepository.save(existingTask);
                     TaskDTO sevedTaskDTO = taskMapper.toDTO(savedTask);
                     String newStatus = sevedTaskDTO.getStatus();
-                    taskStatusProducer.sendTaskStatusUpdate(sevedTaskDTO.getId(), newStatus);
+                    if (!newStatus.equals(oldStatus.name())) {
+                        taskStatusProducer.sendTaskStatusUpdate(sevedTaskDTO.getId(), newStatus);
+                    }
                     return sevedTaskDTO;
+                }).orElseThrow(() -> {
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Задача с ID " + id + " не найдена для обновления");
                 });
     }
 }
