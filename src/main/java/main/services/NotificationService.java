@@ -24,6 +24,10 @@ public class NotificationService {
 
 
     public void sendNotificationEmail(Long taskId, String newStatus) {
+        if (recipientEmail == null || recipientEmail.trim().isEmpty()) {
+            System.out.println("Невозможно отправить уведомление для задачи ID {} (статус: {}): адрес получателя пуст или не настроен.");
+            return;
+        }
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(recipientEmail);
         message.setSubject("Статус задачи обновлен");
